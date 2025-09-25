@@ -1,0 +1,65 @@
+version: '3.8'  # Добавьте версию
+
+services:
+  web-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    ports:
+      - "7080:80"
+    depends_on:
+      - db
+    networks:  # Добавлено
+      - app-network
+
+  db:
+    image: postgres:15  # Указана версия
+    environment:
+      POSTGRES_USER: KLOUD
+      POSTGRES_PASSWORD: Homelike34
+      POSTGRES_DB: mydb
+      PGDATA: /var/lib/postgresql/data/pgdata
+    container_name: db
+    ports:
+      - "5430:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data/pgdata  # Исправлено на именованный volume
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command:  # Исправлен формат command
+      - "postgres"
+      - "-c"
+      - "max_connections=1000"
+      - "-c"
+      - "shared_buffers=256MB"
+      - "-c"
+      - "effective_cache_size=768MB"
+      - "-c"
+      - "maintenance_work_mem=64MB"
+      - "-c"
+      - "checkpoint_completion_target=0.7"
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "default_statistics_target=100"
+    restart: unless-stopped  # Исправлено
+    networks:  # Добавлено
+      - app-network
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "6080:8080"
+    depends_on:  # Добавлено
+      - db
+    networks:  # Добавлено
+      - app-network
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:  # Добавлено
+  app-network:
+    driver: bridge
