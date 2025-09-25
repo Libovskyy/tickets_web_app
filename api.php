@@ -8,7 +8,7 @@ $host = 'db';
 $port = '5430';
 $dbname = 'mydb';
 $username = 'KLOUD';
-$password = 'Homelike34';
+$password = '********';
 
 // Попробуем разные варианты подключения для PostgreSQL
 $connection_attempts = [
